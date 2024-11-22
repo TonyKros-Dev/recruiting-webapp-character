@@ -119,3 +119,44 @@
   justify-content: space-around;
   align-items: center;
 }
+
+.skill-board>div{
+  padding : 40px;
+  text-align: center;
+  border-radius: 10px;
+  height: 600px;
+  box-shadow: 2px 0px 6px rgb(221 207 207);
+
+}
+ul{
+  padding: unset;
+}
+li{
+  list-style: none;
+  line-height: 25px;
+}
+li>span{
+  margin-right: 5px;
+}
+li>button{
+  margin: 5px;
+  text-align: center;
+  width : 20px;
+  height: 20px;
+  border-radius: 2px;
+  border: none;
+}
+select, input{
+  outline: unset;
+  border : none;
+  border-radius: 3px;
+  height: 20px;
+}
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
