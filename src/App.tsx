@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import './App.css';
+
+import Character from './components/Character';
+
 import { ATTRIBUTE_LIST, CLASS_LIST, SKILL_LIST } from './consts';
 
 
@@ -236,8 +239,17 @@ function App() {
           </div>
         </div>
 
-        {characters.map((character, index) => (
-          <div>{character.Charisma}, {character.Intelligence}</div>
+        {characters.map((attList, index) => (
+          <Character
+            key={index} // Provide a unique key
+            AttList={attList}
+            Index={index}
+            ChangeAtt={setCharacters}
+            ChangeSkill={setSkill}
+            Attribute={characters}
+            Skills={skill}
+            SkillCheck={setSkillCheck}
+          />
         ))}
       </section>
     </div>
