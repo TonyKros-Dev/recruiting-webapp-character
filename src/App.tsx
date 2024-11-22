@@ -7,7 +7,7 @@ import { postCharacters } from './utils';
 import { SKILL_LIST } from './consts';
 
 
-interface Character {
+interface Attribute {
   Strength: number;
   Dexterity: number;
   Constitution: number;
@@ -47,11 +47,11 @@ interface SkillCheck {
 }
 
 function App() {
-  
+
   const [selectedSkill, setSelectedSkill] = useState<String>(SKILL_LIST[0].name);
   const [dc, setDC] = useState<number>(0);
 
-  const [characters, setCharacters] = useState<Character[]>([
+  const [attributes, setAttributes] = useState<Attribute[]>([
     {
       Strength: 10,
       Dexterity: 10,
@@ -95,8 +95,8 @@ function App() {
   });
 
   const addNewCharacter = () => {
-    setCharacters([
-      ...characters,
+    setAttributes([
+      ...attributes,
       {
         Strength: 10,
         Dexterity: 10,
@@ -132,7 +132,7 @@ function App() {
   };
 
   const resetAllCharacters = () => {
-    setCharacters([
+    setAttributes([
       {
         Strength: 10,
         Dexterity: 10,
@@ -174,15 +174,56 @@ function App() {
     });
   };
 
+  const onParyRollSkill = () => {
+    const totalValue = skill.map((s) => {
+      let total = Object.values(s).reduce(
+        (sum: number, value: number) => sum + value,
+        0
+      );
+      return total;
+    });
+    const maxCha = Math.max(...totalValue);
+    const maxIndex = totalValue.indexOf(maxCha);
+
+    let randomNumber = Math.floor(Math.random() * 21);
+    const skillNameKey = selectedSkill.replace(/\s+/g, "");
+    let skillNumber = Object.entries(skill[maxIndex]).find(
+      ([key, val]) => key === skillNameKey
+    )[1];
+    let skillModifierName = SKILL_LIST.filter(
+      (skill) => skill.name.replace(/\s+/g, "") === skillNameKey
+    )[0].attributeModifier;
+    let skillModifier = Math.floor((attributes[maxIndex][skillModifierName] - 10) / 2);
+    const total = Number(skillNumber) + skillModifier;
+    console.log(skillModifier, typeof skillNumber);
+
+    let result = randomNumber + dc > total ? "success" : "failure";
+
+    setSkillCheck({
+      index: (maxIndex + 1).toString(), // Convert index to string
+      skill: selectedSkill.toString(), // Ensure skill is a string
+      skillNumber: total.toString(), // Convert skillNumber to string
+      rollNumber: randomNumber.toString(), // Convert rollNumber to string
+      DC: dc.toString(), // Convert DC to string
+      result: result.toString(), // Convert result to string
+    });
+  };
+
   const saveCharacters = useCallback(async () => {
     try {
-      await postCharacters(characters);
+      const payload = attributes.map((att, index) => {
+        return {
+          attribute: att,
+          skill: skill[index]
+        }
+      })
+      await postCharacters(payload);
       window.alert("The characters has been saved successfully")
     } catch (err) {
       console.log(err);
       window.alert("Something went wrong while saving characters")
     }
-  }, [characters]);
+  }, [attributes, skill]);
 
   return (
     <div className="App">
@@ -199,20 +240,22 @@ function App() {
         <div className="App-result">
           <div className="title">Skill Check Results</div>
           <div className="characterName">
-            <span>Character: 1</span>
+            <span>Character: {skillCheck["index"]} </span>
             <span></span>
           </div>
           <div>
-            <span>Skill: AnimalHandling</span>
+            <span>
+              Skill: {skillCheck["skill"]} : {skillCheck["skillNumber"]}
+            </span>
           </div>
           <div>
-            <span>You Rolled: 12 </span>
+            <span>You Rolled: {skillCheck["rollNumber"]} </span>
           </div>
           <div>
-            <span>The DC was: 12</span>
+            <span>The DC was: {skillCheck["DC"]}</span>
           </div>
           <div>
-            <span>Result: Successful</span>
+            <span>Result: {skillCheck["result"]}</span>
           </div>
         </div>
 
@@ -244,21 +287,21 @@ function App() {
                   value={dc}
                 />
               </div>
-              <button>Roll</button>
+              <button onClick={() => onParyRollSkill()}>Roll</button>
             </div>
           </div>
         </div>
 
-        {characters.map((attList, index) => (
+        {attributes.map((attList, index) => (
           <Character
             key={index} // Provide a unique key
-            AttList={attList}
-            Index={index}
-            ChangeAtt={setCharacters}
-            ChangeSkill={setSkill}
-            Attribute={characters}
-            Skills={skill}
-            SkillCheck={setSkillCheck}
+            attList={attList}
+            index={index}
+            attribute={attributes}
+            skills={skill}
+            changeAtt={setAttributes}
+            changeSkill={setSkill}
+            setSkillCheck={setSkillCheck}
           />
         ))}
       </section>

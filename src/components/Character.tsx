@@ -8,13 +8,13 @@ import Skill from "./Skill";
 import { SKILL_LIST } from "../consts";
 
 export default function Character({
-  AttList,
-  Index,
-  ChangeAtt,
-  ChangeSkill,
-  Attribute,
-  Skills,
-  SkillCheck,
+  attList,
+  index,
+  changeAtt,
+  changeSkill,
+  attribute,
+  skills,
+  setSkillCheck,
 }) {
   const [selectedSkill, setSelectedSkill] = useState<String>(SKILL_LIST[0].name);
   const [dc, setDC] = useState<number>(0);
@@ -25,21 +25,21 @@ export default function Character({
     const skillNameKey = selectedSkill.replace(/\s+/g, "");
 
     let randomNumber = Math.floor(Math.random() * 21);
-    let skillNumber = Object.entries(Skills[Index]).find(
+    let skillNumber = Object.entries(skills[index]).find(
       ([key, val]) => key === skillNameKey
     )[1];
     let skillModifierName = SKILL_LIST.filter(
       (skill) => skill.name.replace(/\s+/g, "") === skillNameKey
     )[0].attributeModifier;
     let skillModifier = Math.floor(
-      (Attribute[Index][skillModifierName] - 10) / 2
+      (attribute[index][skillModifierName] - 10) / 2
     );
     const total = Number(skillNumber) + skillModifier;
     console.log(skillModifier, typeof skillNumber);
 
     let result = randomNumber + dc > total ? "success" : "failure";
-    SkillCheck({
-      index: Index + 1,
+    setSkillCheck({
+      index: index + 1,
       skill: selectedSkill,
       skillNumber: total,
       rollNumber: randomNumber,
@@ -48,8 +48,8 @@ export default function Character({
     });
   };
 
-  const AttModifier = (attIndex: number, attName: string, val: number) => {
-    let tempAtr = [...Attribute];
+  const updateAtt = (attIndex: number, attName: string, val: number) => {
+    let tempAtr = [...attribute];
     tempAtr[attIndex][attName] += val;
     let totalValue: any = Object.values(tempAtr[attIndex]).reduce(
       (sum: number, value: number) => sum + value,
@@ -57,11 +57,11 @@ export default function Character({
     );
 
     if (totalValue > 70) {
-      window.alert("A Chracter can have up to 70 Delegated Attribute Points");
+      window.alert("A Chracter can have up to 70 Delegated attribute Points");
 
       return false;
     } else {
-      ChangeAtt(tempAtr);
+      changeAtt(tempAtr);
     }
     console.log(totalValue);
   };
@@ -70,13 +70,13 @@ export default function Character({
     setSelClassName(val);
   };
 
-  const SkillModify = (
+  const updateSkill = (
     skillIndex: number,
     skillNameKey: string,
     avalSkillValue: number,
     val: number
   ) => {
-    let tempSkill = [...Skills];
+    let tempSkill = [...skills];
     tempSkill[skillIndex][skillNameKey] += val;
 
     const totalValue: any = Object.values(tempSkill[skillIndex]).reduce(
@@ -91,13 +91,13 @@ export default function Character({
       );
       return false;
     } else {
-      ChangeSkill(tempSkill);
+      changeSkill(tempSkill);
     }
   };
 
   return (
     <div className="App-character">
-      <span className="title-font">Charactor: {Index + 1}</span>
+      <span className="title-font">Charactor: {index + 1}</span>
       <div className="skill-check">
         <span className="title-font">Skill Check</span>
         <div className="skill-input">
@@ -129,14 +129,14 @@ export default function Character({
       </div>
 
       <section className="skill-board">
-        <Attributes AttModifier={AttModifier} AttList={AttList} Index={Index} />
-        <Classes Attribute={Attribute[Index]} selClass={selectClass} />
+        <Attributes updateAtt={updateAtt} attList={attList} index={index} />
+        <Classes attribute={attribute[index]} selClass={selectClass} />
         <MinReq selClassName={selClassName} selClass={selectClass} />
         <Skill
-          Attribute={Attribute[Index]}
-          skills={Skills[Index]}
-          changeSkill={SkillModify}
-          Index={Index}
+          attribute={attribute[index]}
+          skills={skills[index]}
+          updateSkill={updateSkill}
+          index={index}
         />
       </section>
     </div>

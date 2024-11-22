@@ -1,10 +1,10 @@
 import { CLASS_LIST } from "../consts";
 
-export default function Classes({ Attribute, selClass }) {
+export default function Classes({ attribute, selClass }) {
   const SelectedClass = Object.entries(CLASS_LIST).map(
     ([className, attributes]) => {
       const allSmaller = Object.entries(attributes).every(
-        ([key, val]) => val <= Attribute[key]
+        ([key, val]) => val <= attribute[key]
       );
       return { className, allSmaller };
     }
