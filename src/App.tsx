@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import './App.css';
 
 import Character from './components/Character';
 
-import { ATTRIBUTE_LIST, CLASS_LIST, SKILL_LIST } from './consts';
+import { postCharacters } from './utils';
+import { SKILL_LIST } from './consts';
 
 
 interface Character {
@@ -173,6 +174,15 @@ function App() {
     });
   };
 
+  const saveCharacters = useCallback(async () => {
+    try {
+      await postCharacters(characters);
+      window.alert("The characters has been saved successfully")
+    } catch (err) {
+      console.log(err);
+      window.alert("Something went wrong while saving characters")
+    }
+  }, [characters]);
 
   return (
     <div className="App">
@@ -183,7 +193,7 @@ function App() {
         <div className="App-featureBtn">
           <button onClick={addNewCharacter}>Add New Character</button>
           <button onClick={resetAllCharacters}>Reset All Characters</button>
-          <button>Save All Characters</button>
+          <button onClick={saveCharacters}>Save All Characters</button>
         </div>
 
         <div className="App-result">
